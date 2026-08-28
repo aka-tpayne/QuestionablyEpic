@@ -181,7 +181,7 @@ export function getSetItemLevel(itemSource, playerSettings, difficultyType = "dr
   }
   else if (instanceID === -69) {
     // Delves
-    itemLevel = 276 //itemLevels.crafted[playerSettings.craftedLevel]; // Temporary. Will need its own panel.
+    itemLevel = 321 //itemLevels.crafted[playerSettings.craftedLevel]; // Temporary. Will need its own panel.
   }
   //else if (instanceID === 1209) itemLevel = 441; // Dawn of the Infinite, upgraded one time.
   else if (instanceID === -30) itemLevel = 359; // Honor. Currently unused.
@@ -192,8 +192,8 @@ export function getSetItemLevel(itemSource, playerSettings, difficultyType = "dr
 
   if (instanceID === 1305 || itemSlot.includes("Weapon") || itemSlot === "Offhand" || itemSlot === "Shield" || itemSlot === "Trinket") {
     // Voidcores
-    if (itemLevel === 276 || itemLevel === 289) itemLevel += 9;
-    else if (itemLevel === 272 || itemLevel === 285) itemLevel += 10;
+    //if (itemLevel === 276 || itemLevel === 289) itemLevel += 9;
+    //else if (itemLevel === 272 || itemLevel === 285) itemLevel += 10;
   }
 
   return itemLevel;
@@ -381,13 +381,14 @@ function checkItemViable(rawItem, player) {
   const spec = player.getSpec();
   const acceptableArmorTypes = getValidArmorTypes(spec);
   const acceptableWeaponTypes = getValidWeaponTypes(spec, "Weapons");
-  const acceptableOffhands = getValidWeaponTypes(spec, "Offhands");
+  let acceptableOffhands = getValidWeaponTypes(spec, "Offhands");
+  if (player.spec === "Restoration Shaman" || player.spec === "Holy Paladin") acceptableOffhands = [6]; // Don't show offhands for Resto Sham or Holy Paladin.
   const classRestriction = getItemProp(rawItem.id, "classRestriction");
 
   // Check that the item is wearable by the given class. Could be split into an armor and weapons check for code cleanliness.
   const slotCheck =
     rawItem.slot === "Back" ||
-    (rawItem.itemClass === 4 && acceptableArmorTypes.includes(rawItem.itemSubClass)) ||
+    (rawItem.itemClass === 4 && rawItem.slot !== "Offhand" && acceptableArmorTypes.includes(rawItem.itemSubClass)) ||
     ((rawItem.slot === "Holdable" || rawItem.slot === "Offhand" || rawItem.slot === "Shield") && acceptableOffhands.includes(rawItem.itemSubClass)) ||
     (rawItem.itemClass === 2 && acceptableWeaponTypes.includes(rawItem.itemSubClass));
 

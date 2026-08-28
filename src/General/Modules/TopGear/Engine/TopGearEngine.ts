@@ -27,7 +27,7 @@ import { getFolioEffect } from "Retail/Engine/EffectFormulas/Generic/PatchEffect
  */
 
 const softSlice = 3000;
-const adjustWeights = false;
+const adjustWeights = true;
 
 
 // This is just a timer function. We might eventually just move it to a timeUtility file for better re-use.
@@ -781,7 +781,7 @@ function evalSet(rawItemSet: ItemSet, player: Player, contentType: contentTypes,
 
   // Vantus Rune
   if (contentType === "Raid") {
-    consumableStats.versatility = (consumableStats.versatility ?? 0) + 270;
+    consumableStats.versatility = (consumableStats.versatility ?? 0) + 162;
   }
 
   statBreakdown.consumables = consumableStats;  
@@ -828,7 +828,7 @@ function evalSet(rawItemSet: ItemSet, player: Player, contentType: contentTypes,
 
   // == Set Bonuses ==
   // --- Item Set Bonuses (usually tier) ---
-  const usedSets: any[] = []
+  let usedSets: any[] = []
   for (const set in setBonuses) {
     if (setBonuses[set] > 1) {
       const itemSet: ItemEffect[] = getItemSet(set, setBonuses[set], player.getSpec())
@@ -840,13 +840,18 @@ function evalSet(rawItemSet: ItemSet, player: Player, contentType: contentTypes,
       })
     }
 
-    if (userSettings.forceTier) {
+  }
+    if (userSettings.forceTier?.value) {
       // Override tier. Used sometimes in upgrade finder where we want to compare items post-catalyst.
       effectList = effectList.filter(effect => effect.type !== "set bonus");
-      effectList = effectList.concat(getSeasonalTier(userSettings.forceTier.value, player.spec))
-    }
+      const seasonalTier = getSeasonalTier(userSettings.forceTier.value, player.spec);
+      effectList = effectList.concat(seasonalTier);
+      usedSets = seasonalTier.map(tier => tier.name);
+      
+        //console.log(JSON.stringify(effectList))
+        //console.log(userSettings);
 
-  }
+    }
 
   // Armor Banding
   if (effectList.filter(effect => effect.name === "Writhing Armor Banding").length > 0) {
@@ -858,8 +863,10 @@ function evalSet(rawItemSet: ItemSet, player: Player, contentType: contentTypes,
     const effect = effectList[x];
     if (!useSeq || (castModel.modelType[contentType] === "Sequences" && !effect.onUse)) {
       effectStats.push(getEffectValue(effect, player, castModel, contentType, effect.level, userSettings, "Retail", setStats, setVariables));
+      
     }
   }
+
 
   // Omnium Folio
   // Handle user entry / unlocks later.
@@ -1007,7 +1014,7 @@ function evalSet(rawItemSet: ItemSet, player: Player, contentType: contentTypes,
     setStats.versatility = (setStats.versatility || 0) + STATCONVERSION.VERSATILITY * 3;
     setStats.intellect = (setStats.intellect || 0) * 1.03; // Arcane Intellect
 
-    const DR_CONST = adjustWeights ? 0.00163669230769231 : 0;
+    const DR_CONST = adjustWeights ? 0.00083669230769231 : 0;
     const DR_CONSTLEECH = 0.05122569230769231;
 
     // Apply soft DR formula to stats, as the more we get of any stat the weaker it becomes relative to our other stats.
@@ -1085,7 +1092,7 @@ function evalSet(rawItemSet: ItemSet, player: Player, contentType: contentTypes,
   // Wearing two on-use trinkets is generally a bad idea since they're underbudget compared to procs, only one can be combined with cooldowns, and 
   // player usage is likely to be managed poorly.
   if ( "onUseTrinkets" in builtSet && builtSet.onUseTrinkets.length == 2) {
-    hardScore -= 2800;
+    hardScore -= 150;
   }
 
   builtSet.hardScore = Math.round(1000 * hardScore) / 1000;
