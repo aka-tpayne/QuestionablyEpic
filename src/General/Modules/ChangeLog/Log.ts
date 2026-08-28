@@ -21,6 +21,14 @@ export const getVersion = (): string => {
 export const changeLog: entry[] = [
         {
     version: "12.1 / 5.5.4",
+    update: 5,
+    date: "August 28",
+    changes: [ 
+      "Item gear menus now include downgrade options that stay on the item's upgrade track.",
+    ]
+  },
+        {
+    version: "12.1 / 5.5.4",
     update: 4,
     date: "August 16",
     changes: [ 

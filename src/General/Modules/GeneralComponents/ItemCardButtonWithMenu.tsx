@@ -30,7 +30,7 @@ interface ItemCardButtonWithMenuProps {
   item: any;
 }
 
-const getMenuItems = (item: any): MenuItemType[] => {
+export const getMenuItems = (item: any): MenuItemType[] => {
   const itemLevel = item.level;
   let items: MenuItemType[] = []; 
   
@@ -47,10 +47,15 @@ const getMenuItems = (item: any): MenuItemType[] => {
   }*/
 
   const itemLevelCaps: { [key: string]: number } = itemLevelCap;
+  const itemLevelFloors: { [key: string]: number } = { ...CONSTANTS.itemLevelFloors };
   if (item.upgradeTrack !== "" && item.upgradeTrack in itemLevelCaps) {
+    const cap = itemLevelCaps[item.upgradeTrack];
+    const floor = itemLevelFloors[item.upgradeTrack];
     fullItemLevels.forEach((level) => {
-      if (level > itemLevel && level <= itemLevelCaps[item.upgradeTrack]) {
+      if (level > itemLevel && level <= cap) {
         items.push({ id: items.length + 1, ilvlMinimum: level, type: "ilvl", label: "Upgrade to " + level });
+      } else if (typeof floor === "number" && level < itemLevel && level >= floor && level <= cap) {
+        items.push({ id: items.length + 1, ilvlMinimum: level, type: "ilvl", label: "Downgrade to " + level });
       }
     });
   }
@@ -102,7 +107,7 @@ const getExtraMenuItems = (item: any, gameType: gameTypes): MenuItemType[] => {
 
 }
 
-const ItemCardButtonWithMenu: React.FC<ItemCardButtonWithMenuProps> = ({ key, deleteActive, deleteItem, canBeCatalyzed, catalyseItemCard, itemLevel, upgradeItem, setCustomItemOptions, embellishItem, item, gameType }) => {
+const ItemCardButtonWithMenu: React.FC<ItemCardButtonWithMenuProps> = ({ key, deleteActive, deleteItem, canBeCatalyzed, catalyseItemCard, upgradeItem, setCustomItemOptions, embellishItem, item, gameType }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { t } = useTranslation();
   const hasCatalyzedID = item?.catalyzedID !== undefined && item?.catalyzedID !== null && item?.catalyzedID !== "";
@@ -222,7 +227,6 @@ const ItemCardButtonWithMenu: React.FC<ItemCardButtonWithMenuProps> = ({ key, de
           </MenuItem>
         ) : null}
         {menuItems
-          .filter((filter) => filter.ilvlMinimum > itemLevel)
           .map((item) => (
             <MenuItem
               sx={{
