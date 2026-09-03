@@ -236,6 +236,7 @@ export function runTopGear(rawItemList: Item[], wepCombos: Item[], player: Playe
   let newCastModel = new CastModel(newPlayer.getSpec(), contentType, castModel.modelName, 0);
   newCastModel = Object.assign(newCastModel, castModel);
 
+  console.log(JSON.stringify(rawItemList.filter(item => item.id === 272254)));
   // == Setup our list of items ==
   // We duplicate the users items so that nothing is changed during the Top Gear process.
   // If a player has the auto-socket setting on then we'll add sockets to their items.
@@ -614,7 +615,7 @@ function enchantItems(bonus_stats: Stats, setStats: Stats, castModel: any, conte
   let wepEnchantName = "Acuity of the Ren'dorei"
   if (spec === "Discipline Priest" || spec === "Restoration Druid") {
     wepEnchantName = "Berserker's Rage";
-    bonus_stats.haste = (bonus_stats.mastery || 0) + 124 * convertPPMToUptime(3, 15);
+    bonus_stats.haste = (bonus_stats.haste || 0) + 124 * convertPPMToUptime(3, 15);
   }
   else if (spec === "Preservation Evoker") {
     wepEnchantName = "Arcane Mastery";

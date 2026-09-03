@@ -722,8 +722,8 @@ export function processItem(line: string, player: Player, contentType: contentTy
     // Post-12.1 catalyzed pieces keep the source item's secondaries and cantrips (redirected_base_stats).
     item.effect = protoItem.effect ? protoItem.effect : getItemProp(statSourceId, "effect");
 
-    if (item.vaultItem) item.uniqueEquip = "vault";
-    else if (protoItem.uniqueTag !== "") item.uniqueEquip = protoItem.uniqueTag;
+    if (item.vaultItem) item.uniqueEquip = ["vault"];
+    else if (protoItem.uniqueTag !== "") item.uniqueEquip = [protoItem.uniqueTag];
 
     if (protoItem.upgradeTrack !== "") {
       item.upgradeTrack = protoItem.upgradeTrack;
@@ -739,7 +739,6 @@ export function processItem(line: string, player: Player, contentType: contentTy
 
     item.quality = protoItem.quality !== 0 ? protoItem.quality : (getItemProp(protoItem.id, "quality") || 4);
     item.softScore = scoreItem(item, player, contentType, "Retail", playerSettings);
-
     return item;  
   } else {
     return null;
